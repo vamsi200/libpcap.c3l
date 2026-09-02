@@ -1,0 +1,482 @@
+module pcap;
+
+const PCAP_VERSION_MAJOR = 2;
+const PCAP_VERSION_MINOR = 4;
+const PCAP_ERRBUF_SIZE = 256;
+
+const PCAP_IF_LOOPBACK = 0x00000001;
+const PCAP_IF_UP = 0x00000002;
+const PCAP_IF_RUNNING = 0x00000004;
+const PCAP_IF_WIRELESS = 0x00000008;
+const PCAP_IF_CONNECTION_STATUS = 0x00000030;
+const PCAP_IF_CONNECTION_STATUS_UNKNOWN = 0x00000000;
+const PCAP_IF_CONNECTION_STATUS_CONNECTED = 0x00000010;
+const PCAP_IF_CONNECTION_STATUS_DISCONNECTED = 0x00000020;
+const PCAP_IF_CONNECTION_STATUS_NOT_APPLICABLE = 0x00000030;
+const PCAP_ERROR = -1;
+const PCAP_ERROR_BREAK = -2;
+const PCAP_ERROR_NOT_ACTIVATED = -3;
+const PCAP_ERROR_ACTIVATED = -4;
+const PCAP_ERROR_NO_SUCH_DEVICE = -5;
+const PCAP_ERROR_RFMON_NOTSUP = -6;
+const PCAP_ERROR_NOT_RFMON = -7;
+const PCAP_ERROR_PERM_DENIED = -8;
+const PCAP_ERROR_IFACE_NOT_UP = -9;
+const PCAP_ERROR_CANTSET_TSTAMP_TYPE = -10;
+const PCAP_ERROR_PROMISC_PERM_DENIED = -11;
+const PCAP_ERROR_TSTAMP_PRECISION_NOTSUP = -12;
+const PCAP_ERROR_CAPTURE_NOTSUP = -13;
+const PCAP_WARNING = 1;
+const PCAP_WARNING_PROMISC_NOTSUP = 2;
+const PCAP_WARNING_TSTAMP_TYPE_NOTSUP = 3;
+const PCAP_NETMASK_UNKNOWN = 0xffffffff;
+const PCAP_CHAR_ENC_LOCAL = 0x00000000U;
+const PCAP_CHAR_ENC_UTF_8 = 0x00000001U;
+const PCAP_MMAP_32BIT = 0x00000002U;
+const PCAP_TSTAMP_HOST = 0;
+const PCAP_TSTAMP_HOST_LOWPREC = 1;
+const PCAP_TSTAMP_HOST_HIPREC = 2;
+const PCAP_TSTAMP_ADAPTER = 3;
+const PCAP_TSTAMP_ADAPTER_UNSYNCED = 4;
+const PCAP_TSTAMP_HOST_HIPREC_UNSYNCED = 5;
+const PCAP_TSTAMP_PRECISION_MICRO = 0;
+const PCAP_TSTAMP_PRECISION_NANO = 1;
+const PCAP_BUF_SIZE = 1024;
+const PCAP_SRC_FILE = 2;
+const PCAP_SRC_IFLOCAL = 3;
+const PCAP_SRC_IFREMOTE = 4;
+const PCAP_SRC_FILE_STRING = "file://";
+const PCAP_SRC_IF_STRING = "rpcap://";
+const PCAP_OPENFLAG_PROMISCUOUS = 0x00000001;
+const PCAP_OPENFLAG_DATATX_UDP = 0x00000002;
+const PCAP_OPENFLAG_NOCAPTURE_RPCAP = 0x00000004;
+const PCAP_OPENFLAG_NOCAPTURE_LOCAL = 0x00000008;
+const PCAP_OPENFLAG_MAX_RESPONSIVENESS = 0x00000010;
+const RPCAP_RMTAUTH_NULL = 0;
+const RPCAP_RMTAUTH_PWD = 1;
+const PCAP_SAMP_NOSAMP = 0;
+const PCAP_SAMP_1_EVERY_N = 1;
+const PCAP_SAMP_FIRST_AFTER_N_MS = 2;
+const RPCAP_HOSTLIST_SIZE = 1024;
+
+alias Pcap_t = void;
+
+alias Pcap_dumper_t = void;
+
+struct Pcap_if_t {
+    Pcap_if_t* next;
+    CChar* name;
+    CChar* description;
+    Pcap_addr_t* addresses;
+    uint flags;
+}
+
+struct Pcap_addr_t {
+    Pcap_addr_t* next;
+    Sockaddr* addr;
+    Sockaddr* netmask;
+    Sockaddr* broadaddr;
+    Sockaddr* dstaddr;
+}
+
+struct Pcap_file_header {
+  uint magic;
+  ushort version_major;
+  ushort version_minor;
+  int thiszone;
+  uint sigfigs;
+  uint snaplen;
+  uint linktype;
+}
+
+constdef Pcap_direction_t : CUInt {
+  PCAP_D_INOUT = 0,
+  PCAP_D_IN = 1,
+  PCAP_D_OUT = 2
+}
+
+struct Timeval {
+    long tv_sec;
+    long tv_usec;
+}
+
+struct Pcap_pkthdr {
+  Timeval ts;
+  uint caplen;
+  uint len;
+}
+
+
+struct Pcap_stat {
+  uint ps_recv;
+  uint ps_drop;
+  uint ps_ifdrop;
+}
+
+
+struct Pcap_if {
+  Pcap_if* next;
+  CChar* name;
+  CChar* description;
+  Pcap_addr* addresses;
+  uint flags;
+}
+
+struct Sockaddr {
+    ushort sa_family;
+    char[14] sa_data;
+}
+
+struct Pcap_addr {
+  Pcap_addr* next;
+  Sockaddr* addr;
+  Sockaddr* netmask;
+  Sockaddr* broadaddr;
+  Sockaddr* dstaddr;
+}
+
+alias Pcap_handler = fn void(
+  char*,
+  Pcap_pkthdr*,
+  char*);
+
+extern fn CChar* pcap_lookupdev(
+  CChar*)
+@cname("pcap_lookupdev");
+
+extern fn CInt pcap_can_set_rfmon(
+  Pcap_t*)
+@cname("Pcap_can_set_rfmon");
+
+extern fn CInt pcap_list_tstamp_types(
+  Pcap_t*,
+  CInt**)
+@cname("pcap_list_tstamp_types");
+
+extern fn void pcap_free_tstamp_types(
+  CInt*)
+@cname("pcap_free_tstamp_types");
+
+extern fn CInt pcap_tstamp_type_name_to_val(
+  CChar*)
+@cname("pcap_tstamp_type_name_to_val");
+
+extern fn CChar* pcap_tstamp_type_val_to_name(
+  CInt)
+@cname("pcap_tstamp_type_val_to_name");
+
+extern fn CChar* pcap_tstamp_type_val_to_description(
+  CInt)
+@cname("pcap_tstamp_type_val_to_description");
+
+extern fn Pcap_t* pcap_open_dead(
+  CInt,
+  CInt)
+@cname("pcap_open_dead");
+
+extern fn Pcap_t* pcap_open_dead_with_tstamp_precision(
+  CInt,
+  CInt,
+  uint)
+@cname("pcap_open_dead_with_tstamp_precision");
+
+extern fn void pcap_close(
+  Pcap_t*)
+@cname("pcap_close");
+
+extern fn char* pcap_next(
+  Pcap_t*,
+  Pcap_pkthdr*)
+@cname("pcap_next");
+
+extern fn CInt pcap_next_ex(
+  Pcap_t*,
+  Pcap_pkthdr**,
+  char**)
+@cname("pcap_next_ex");
+
+extern fn void pcap_breakloop(
+  Pcap_t*)
+@cname("pcap_breakloop");
+
+extern fn CInt pcap_getnonblock(
+  Pcap_t*,
+  CChar*)
+@cname("pcap_getnonblock");
+
+extern fn CChar* pcap_statustostr(
+  CInt)
+@cname("pcap_statustostr");
+
+extern fn CChar* pcap_strerror(
+  CInt)
+@cname("pcap_strerror");
+
+extern fn CChar* pcap_geterr(
+  Pcap_t*)
+@cname("pcap_geterr");
+
+extern fn void pcap_perror(
+  Pcap_t*,
+  CChar*)
+@cname("pcap_perror");
+
+struct Bpf_insn {
+	ushort	code;
+	char	jt;
+	char	jf;
+	int k;
+}
+
+struct Bpf_program {
+    uint bf_len;
+    Bpf_insn* bf_insns;
+}
+
+extern fn void pcap_freecode(
+  Bpf_program*)
+@cname("pcap_freecode");
+
+extern fn CInt pcap_offline_filter(
+  Bpf_program*,
+  Pcap_pkthdr*,
+  char*)
+@cname("pcap_offline_filter");
+
+extern fn CInt pcap_datalink(
+  Pcap_t*)
+@cname("pcap_datalink");
+
+extern fn CInt pcap_datalink_ext(
+  Pcap_t*)
+@cname("pcap_datalink_ext");
+
+extern fn CInt pcap_list_datalinks(
+  Pcap_t*,
+  CInt**)
+@cname("pcap_list_datalinks");
+
+extern fn void pcap_free_datalinks(
+  CInt*)
+@cname("pcap_free_datalinks");
+
+extern fn CInt pcap_datalink_name_to_val(
+  CChar*)
+@cname("pcap_datalink_name_to_val");
+
+extern fn CChar* pcap_datalink_val_to_name(
+  CInt)
+@cname("pcap_datalink_val_to_name");
+
+extern fn CChar* pcap_datalink_val_to_description(
+  CInt)
+@cname("pcap_datalink_val_to_description");
+
+extern fn CChar* pcap_datalink_val_to_description_or_dlt(
+  CInt)
+@cname("pcap_datalink_val_to_description_or_dlt");
+
+extern fn CInt pcap_snapshot(
+  Pcap_t*)
+@cname("pcap_snapshot");
+
+extern fn CInt pcap_is_swapped(
+  Pcap_t*)
+@cname("pcap_is_swapped");
+
+extern fn CInt pcap_major_version(
+  Pcap_t*)
+@cname("pcap_major_version");
+
+extern fn CInt pcap_minor_version(
+  Pcap_t*)
+@cname("pcap_minor_version");
+
+extern fn CInt pcap_bufsize(
+  Pcap_t*)
+@cname("pcap_bufsize");
+
+alias File = void;
+extern fn File* pcap_file(
+  Pcap_t*)
+@cname("pcap_file");
+
+extern fn CInt pcap_fileno(
+  Pcap_t*)
+@cname("pcap_fileno");
+
+extern fn Pcap_dumper_t* pcap_dump_open(
+  Pcap_t*,
+  CChar*)
+@cname("pcap_dump_open");
+
+extern fn Pcap_dumper_t* pcap_dump_fopen(
+  Pcap_t*,
+  File* fp)
+@cname("pcap_dump_fopen");
+
+extern fn Pcap_dumper_t* pcap_dump_open_append(
+  Pcap_t*,
+  CChar*)
+@cname("pcap_dump_open_append");
+
+extern fn File* pcap_dump_file(
+  Pcap_dumper_t*)
+@cname("pcap_dump_file");
+
+extern fn CLong pcap_dump_ftell(
+  Pcap_dumper_t*)
+@cname("pcap_dump_ftell");
+
+extern fn long pcap_dump_ftell64(
+  Pcap_dumper_t*)
+@cname("pcap_dump_ftell64");
+
+extern fn CInt pcap_dump_flush(
+  Pcap_dumper_t*)
+@cname("pcap_dump_flush");
+
+extern fn void pcap_dump_close(
+  Pcap_dumper_t*)
+@cname("pcap_dump_close");
+
+extern fn void pcap_dump(
+  char*,
+  Pcap_pkthdr*,
+  char*)
+@cname("pcap_dump");
+
+extern fn void pcap_freealldevs(
+  Pcap_if_t*)
+@cname("pcap_freealldevs");
+
+extern fn CChar* pcap_lib_version()
+@cname("pcap_lib_version");
+
+extern fn CInt pcap_get_selectable_fd(
+  Pcap_t*)
+@cname("pcap_get_selectable_fd");
+
+extern fn Timeval* pcap_get_required_select_timeout(
+  Pcap_t*)
+@cname("pcap_get_required_select_timeout");
+
+struct Pcap_rmtauth {
+  CInt type;
+  CChar* username;
+  CChar* password;
+}
+
+
+struct Pcap_samp {
+  CInt method;
+  CInt value;
+}
+
+extern fn Pcap_samp* pcap_setsampling(
+  Pcap_t* p)
+@cname("pcap_setsampling");
+
+extern fn void pcap_remoteact_cleanup()
+@cname("pcap_remoteact_cleanup");
+
+extern fn Pcap_t* pcap_create(CChar* device, CChar* errbuf);
+extern fn int pcap_activate(Pcap_t* pcap);
+extern fn Pcap_t* pcap_open_live(
+    CChar* device,
+    int snaplen,
+    int promisc,
+    int to_ms,
+    CChar* errbuf
+);
+
+extern fn int pcap_compile(
+    Pcap_t* pcap,
+    Bpf_program* fp,
+    CChar* str,
+    int optimize,
+    uint netmask
+);
+
+extern fn CInt pcap_setfilter(Pcap_t* pcap, Bpf_program* fp);
+extern fn CInt pcap_findalldevs(Pcap_if_t** alldevs, char* errbuf);
+extern fn CInt pcap_set_snaplen(Pcap_t* pcap, int snaplen);
+extern fn CInt pcap_set_promisc(Pcap_t* pcap, int promisc);
+extern fn CInt pcap_set_timeout(Pcap_t* pcap, int to_ms);
+extern fn CInt pcap_set_immediate_mode(Pcap_t* pcap, int immediate);
+extern fn CInt pcap_set_buffer_size(Pcap_t* pcap, CInt size);
+extern fn CInt pcap_set_tstamp_type(Pcap_t* pcap, CInt tstamp_type);
+extern fn CInt pcap_set_tstamp_precision(Pcap_t* pcap, CInt precision);
+extern fn CInt pcap_set_rfmon(Pcap_t* pcap, CInt rfmon);
+extern fn CInt pcap_setnonblock(
+    Pcap_t* pcap,
+    CInt nonblock,
+    CChar* errbuf
+);
+extern fn CInt pcap_loop(
+    Pcap_t* pcap,
+    CInt cnt,
+    Pcap_handler callback,
+    char* user
+);
+
+extern fn CInt pcap_dispatch(
+    Pcap_t* pcap,
+    CInt cnt,
+    Pcap_handler callback,
+    char* user
+);
+
+extern fn CInt pcap_get_tstamp_type(Pcap_t* pcap);
+
+extern fn CInt pcap_get_tstamp_precision(Pcap_t* pcap);
+
+extern fn CInt pcap_stats(
+    Pcap_t* pcap,
+    Pcap_stat* stats
+);
+
+extern fn Pcap_t* pcap_open_offline(
+    CChar* fname,
+    CChar* errbuf
+);
+
+extern fn Pcap_t* pcap_open_offline_with_tstamp_precision(
+    CChar* fname,
+    CInt precision,
+    CChar* errbuf
+);
+
+extern fn Pcap_t* pcap_fopen_offline(
+    File* fp,
+    CChar* errbuf
+);
+
+extern fn Pcap_t* pcap_fopen_offline_with_tstamp_precision(
+    File* fp,
+    CInt precision,
+    CChar* errbuf
+);
+
+extern fn CInt pcap_inject(
+    Pcap_t* pcap,
+    void* buf,
+    ulong size
+);
+
+extern fn CInt pcap_sendpacket(
+    Pcap_t* pcap,
+    char* buf,
+    CInt size
+);
+
+constdef Pcap_direction_t: uint {
+    PCAP_D_INOUT = 0,
+    PCAP_D_IN,
+    PCAP_D_OUT
+}
+
+extern fn CInt pcap_setdirection(
+    Pcap_t* pcap,
+    Pcap_direction_t direction
+);
