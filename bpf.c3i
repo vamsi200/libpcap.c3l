@@ -43,18 +43,18 @@ const BPF_TXA = 0x80;
 const BPF_MEMWORDS = 16;
 
 alias Bpf_int32 = CInt;
-alias Bpf_u_int32 = CInt;
+alias Bpf_u_int32 = CUInt;
 
 struct Bpf_program {
-  CInt bf_len;
+  CUInt bf_len;
   Bpf_insn* bf_insns;
 }
 
 
 struct Bpf_insn {
-  CInt code;
-  CInt jt;
-  CInt jf;
+  ushort code;
+  char jt;
+  char jf;
   Bpf_u_int32 k;
 }
 

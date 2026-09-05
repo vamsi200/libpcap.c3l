@@ -61,7 +61,6 @@ const PCAP_SAMP_FIRST_AFTER_N_MS = 2;
 const RPCAP_HOSTLIST_SIZE = 1024;
 
 alias Pcap_t = void;
-
 alias Pcap_dumper_t = void;
 
 struct Pcap_if_t {
@@ -231,7 +230,7 @@ extern fn int pcap_compile(
 );
 
 extern fn CInt pcap_setfilter(Pcap_t* pcap, Bpf_program* fp);
-extern fn CInt pcap_findalldevs(Pcap_if_t** alldevs, char* errbuf);
+extern fn CInt pcap_findalldevs(Pcap_if_t** alldevs, CChar* errbuf);
 extern fn CInt pcap_set_snaplen(Pcap_t* pcap, int snaplen);
 extern fn CInt pcap_set_promisc(Pcap_t* pcap, int promisc);
 extern fn CInt pcap_set_timeout(Pcap_t* pcap, int to_ms);
