@@ -1,4 +1,4 @@
-module bpf;
+module libpcap::bpf;
 
 const BPF_RELEASE = 199606;
 const BPF_ALIGNMENT = int::size;

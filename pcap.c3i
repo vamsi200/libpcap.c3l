@@ -1,4 +1,4 @@
-module pcap;
+module libpcap::pcap;
 
 const PCAP_VERSION_MAJOR = 2;
 const PCAP_VERSION_MINOR = 4;
