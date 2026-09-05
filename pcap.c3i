@@ -1,4 +1,5 @@
 module libpcap::pcap;
+import libpcap::bpf;
 
 const PCAP_VERSION_MAJOR = 2;
 const PCAP_VERSION_MINOR = 4;
@@ -135,91 +136,26 @@ struct Pcap_addr {
   Sockaddr* dstaddr;
 }
 
-alias Pcap_handler = fn void(
-  char*,
-  Pcap_pkthdr*,
-  char*);
+alias Pcap_handler = fn void(char*, Pcap_pkthdr*, char*);
 
-extern fn CChar* pcap_lookupdev(
-  CChar*)
-@cname("pcap_lookupdev");
-
-extern fn CInt pcap_can_set_rfmon(
-  Pcap_t*)
-@cname("Pcap_can_set_rfmon");
-
-extern fn CInt pcap_list_tstamp_types(
-  Pcap_t*,
-  CInt**)
-@cname("pcap_list_tstamp_types");
-
-extern fn void pcap_free_tstamp_types(
-  CInt*)
-@cname("pcap_free_tstamp_types");
-
-extern fn CInt pcap_tstamp_type_name_to_val(
-  CChar*)
-@cname("pcap_tstamp_type_name_to_val");
-
-extern fn CChar* pcap_tstamp_type_val_to_name(
-  CInt)
-@cname("pcap_tstamp_type_val_to_name");
-
-extern fn CChar* pcap_tstamp_type_val_to_description(
-  CInt)
-@cname("pcap_tstamp_type_val_to_description");
-
-extern fn Pcap_t* pcap_open_dead(
-  CInt,
-  CInt)
-@cname("pcap_open_dead");
-
-extern fn Pcap_t* pcap_open_dead_with_tstamp_precision(
-  CInt,
-  CInt,
-  uint)
-@cname("pcap_open_dead_with_tstamp_precision");
-
-extern fn void pcap_close(
-  Pcap_t*)
-@cname("pcap_close");
-
-extern fn char* pcap_next(
-  Pcap_t*,
-  Pcap_pkthdr*)
-@cname("pcap_next");
-
-extern fn CInt pcap_next_ex(
-  Pcap_t*,
-  Pcap_pkthdr**,
-  char**)
-@cname("pcap_next_ex");
-
-extern fn void pcap_breakloop(
-  Pcap_t*)
-@cname("pcap_breakloop");
-
-extern fn CInt pcap_getnonblock(
-  Pcap_t*,
-  CChar*)
-@cname("pcap_getnonblock");
-
-extern fn CChar* pcap_statustostr(
-  CInt)
-@cname("pcap_statustostr");
-
-extern fn CChar* pcap_strerror(
-  CInt)
-@cname("pcap_strerror");
-
-extern fn CChar* pcap_geterr(
-  Pcap_t*)
-@cname("pcap_geterr");
-
-extern fn void pcap_perror(
-  Pcap_t*,
-  CChar*)
-@cname("pcap_perror");
+extern fn CChar* pcap_lookupdev(CChar*);
+extern fn CInt pcap_can_set_rfmon(Pcap_t*);
+extern fn CInt pcap_list_tstamp_types(Pcap_t*, CInt**);
+extern fn void pcap_free_tstamp_types(CInt*);
+extern fn CInt pcap_tstamp_type_name_to_val(CChar*);
+extern fn CChar* pcap_tstamp_type_val_to_name(CInt);
+extern fn CChar* pcap_tstamp_type_val_to_description(CInt);
+extern fn Pcap_t* pcap_open_dead(CInt, CInt);
+extern fn Pcap_t* pcap_open_dead_with_tstamp_precision(CInt, CInt, uint);
+extern fn void pcap_close(Pcap_t*);
+extern fn char* pcap_next(Pcap_t*, Pcap_pkthdr*);
+extern fn CInt pcap_next_ex(Pcap_t*, Pcap_pkthdr**, char**);
+extern fn void pcap_breakloop(Pcap_t*);
+extern fn CInt pcap_getnonblock(Pcap_t*, CChar*);
+extern fn CChar* pcap_statustostr(CInt);
+extern fn CChar* pcap_strerror(CInt);
+extern fn CChar* pcap_geterr(Pcap_t*);
+extern fn void pcap_perror(Pcap_t*, CChar*);
 
 struct Bpf_insn {
 	ushort	code;
@@ -228,138 +164,39 @@ struct Bpf_insn {
 	int k;
 }
 
-struct Bpf_program {
-    uint bf_len;
-    Bpf_insn* bf_insns;
-}
-
-extern fn void pcap_freecode(
-  Bpf_program*)
-@cname("pcap_freecode");
-
-extern fn CInt pcap_offline_filter(
-  Bpf_program*,
-  Pcap_pkthdr*,
-  char*)
-@cname("pcap_offline_filter");
-
-extern fn CInt pcap_datalink(
-  Pcap_t*)
-@cname("pcap_datalink");
-
-extern fn CInt pcap_datalink_ext(
-  Pcap_t*)
-@cname("pcap_datalink_ext");
-
-extern fn CInt pcap_list_datalinks(
-  Pcap_t*,
-  CInt**)
-@cname("pcap_list_datalinks");
-
-extern fn void pcap_free_datalinks(
-  CInt*)
-@cname("pcap_free_datalinks");
-
-extern fn CInt pcap_datalink_name_to_val(
-  CChar*)
-@cname("pcap_datalink_name_to_val");
-
-extern fn CChar* pcap_datalink_val_to_name(
-  CInt)
-@cname("pcap_datalink_val_to_name");
-
-extern fn CChar* pcap_datalink_val_to_description(
-  CInt)
-@cname("pcap_datalink_val_to_description");
-
-extern fn CChar* pcap_datalink_val_to_description_or_dlt(
-  CInt)
-@cname("pcap_datalink_val_to_description_or_dlt");
-
-extern fn CInt pcap_snapshot(
-  Pcap_t*)
-@cname("pcap_snapshot");
-
-extern fn CInt pcap_is_swapped(
-  Pcap_t*)
-@cname("pcap_is_swapped");
-
-extern fn CInt pcap_major_version(
-  Pcap_t*)
-@cname("pcap_major_version");
-
-extern fn CInt pcap_minor_version(
-  Pcap_t*)
-@cname("pcap_minor_version");
-
-extern fn CInt pcap_bufsize(
-  Pcap_t*)
-@cname("pcap_bufsize");
+extern fn void pcap_freecode(Bpf_program*);
+extern fn CInt pcap_offline_filter(Bpf_program*, Pcap_pkthdr*, char*);
+extern fn CInt pcap_datalink(Pcap_t*);
+extern fn CInt pcap_datalink_ext(Pcap_t*);
+extern fn CInt pcap_list_datalinks(Pcap_t*, CInt**);
+extern fn void pcap_free_datalinks(CInt*);
+extern fn CInt pcap_datalink_name_to_val(CChar*);
+extern fn CChar* pcap_datalink_val_to_name(CInt);
+extern fn CChar* pcap_datalink_val_to_description(CInt);
+extern fn CChar* pcap_datalink_val_to_description_or_dlt(CInt);
+extern fn CInt pcap_snapshot(Pcap_t*);
+extern fn CInt pcap_is_swapped(Pcap_t*);
+extern fn CInt pcap_major_version(Pcap_t*);
+extern fn CInt pcap_minor_version(Pcap_t*);
+extern fn CInt pcap_bufsize(Pcap_t*);
 
 alias File = void;
-extern fn File* pcap_file(
-  Pcap_t*)
-@cname("pcap_file");
 
-extern fn CInt pcap_fileno(
-  Pcap_t*)
-@cname("pcap_fileno");
-
-extern fn Pcap_dumper_t* pcap_dump_open(
-  Pcap_t*,
-  CChar*)
-@cname("pcap_dump_open");
-
-extern fn Pcap_dumper_t* pcap_dump_fopen(
-  Pcap_t*,
-  File* fp)
-@cname("pcap_dump_fopen");
-
-extern fn Pcap_dumper_t* pcap_dump_open_append(
-  Pcap_t*,
-  CChar*)
-@cname("pcap_dump_open_append");
-
-extern fn File* pcap_dump_file(
-  Pcap_dumper_t*)
-@cname("pcap_dump_file");
-
-extern fn CLong pcap_dump_ftell(
-  Pcap_dumper_t*)
-@cname("pcap_dump_ftell");
-
-extern fn long pcap_dump_ftell64(
-  Pcap_dumper_t*)
-@cname("pcap_dump_ftell64");
-
-extern fn CInt pcap_dump_flush(
-  Pcap_dumper_t*)
-@cname("pcap_dump_flush");
-
-extern fn void pcap_dump_close(
-  Pcap_dumper_t*)
-@cname("pcap_dump_close");
-
-extern fn void pcap_dump(
-  char*,
-  Pcap_pkthdr*,
-  char*)
-@cname("pcap_dump");
-
-extern fn void pcap_freealldevs(
-  Pcap_if_t*)
-@cname("pcap_freealldevs");
-
-extern fn CChar* pcap_lib_version()
-@cname("pcap_lib_version");
-
-extern fn CInt pcap_get_selectable_fd(
-  Pcap_t*)
-@cname("pcap_get_selectable_fd");
-
-extern fn Timeval* pcap_get_required_select_timeout(
-  Pcap_t*)
-@cname("pcap_get_required_select_timeout");
+extern fn File* pcap_file(Pcap_t*);
+extern fn CInt pcap_fileno(Pcap_t*);
+extern fn Pcap_dumper_t* pcap_dump_open(Pcap_t*, CChar*);
+extern fn Pcap_dumper_t* pcap_dump_fopen(Pcap_t*, File* fp);
+extern fn Pcap_dumper_t* pcap_dump_open_append(Pcap_t*, CChar*);
+extern fn File* pcap_dump_file(Pcap_dumper_t*);
+extern fn CLong pcap_dump_ftell(Pcap_dumper_t*);
+extern fn long pcap_dump_ftell64(Pcap_dumper_t*);
+extern fn CInt pcap_dump_flush(Pcap_dumper_t*);
+extern fn void pcap_dump_close(Pcap_dumper_t*);
+extern fn void pcap_dump(char*, Pcap_pkthdr*, char*);
+extern fn void pcap_freealldevs(Pcap_if_t*);
+extern fn CChar* pcap_lib_version();
+extern fn CInt pcap_get_selectable_fd(Pcap_t*);
+extern fn Timeval* pcap_get_required_select_timeout(Pcap_t*);
 
 struct Pcap_rmtauth {
   CInt type;
@@ -373,13 +210,8 @@ struct Pcap_samp {
   CInt value;
 }
 
-extern fn Pcap_samp* pcap_setsampling(
-  Pcap_t* p)
-@cname("pcap_setsampling");
-
-extern fn void pcap_remoteact_cleanup()
-@cname("pcap_remoteact_cleanup");
-
+extern fn Pcap_samp* pcap_setsampling(Pcap_t* p);
+extern fn void pcap_remoteact_cleanup();
 extern fn Pcap_t* pcap_create(CChar* device, CChar* errbuf);
 extern fn int pcap_activate(Pcap_t* pcap);
 extern fn Pcap_t* pcap_open_live(
