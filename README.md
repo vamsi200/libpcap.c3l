@@ -2,6 +2,8 @@
 
 C3 bindings for libpcap (pcap.h, bpf.h)
 >Note:
+Linux is currently tested. macOS and Windows support is currently untested.
+
 We link against pcap, so libpcap must be installed on system:
 ```json
 "linked-libraries": [
