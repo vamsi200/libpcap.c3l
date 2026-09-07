@@ -386,4 +386,4 @@ extern fn int pcap_remoteact_list(char* hostlist, char sep, int size, char* errb
 
 extern fn int pcap_remoteact_close(ZString host, char* errbuf);
 
-extern fn void pcap_remoteact_cleanup(void);
+extern fn void pcap_remoteact_cleanup();
