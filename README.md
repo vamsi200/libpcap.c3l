@@ -29,12 +29,13 @@ get c3l from:
 ### Find available interfaces
 ```c3
 import libpcap;
+import std::io;
 
 fn void main() {
     Pcap_if_t* alldevs;
-    CChar[1024] errbuf;
+    char[1024] errbuf;
 
-    CInt ret = pcap::pcap_findalldevs(
+    int ret = pcap::pcap_findalldevs(
         &alldevs,
         &errbuf[0]
     );
@@ -47,7 +48,7 @@ fn void main() {
     Pcap_if_t* dev = alldevs;
 
     while (dev != null) {
-        io::printfn("interface: %s", (ZString)dev.name);
+        io::printfn("interface: %s", dev.name);
         dev = dev.next;
     }
 
@@ -55,13 +56,14 @@ fn void main() {
 }
 ```
 
-### Capture packets with a BPF filter
-
+### Capture packets with a BPF filter 
+>Note: requires elevated privileges
 ```c3
 import libpcap;
+import std::io;
 
 fn void main() {
-    CChar[1024] errbuf;
+    char[1024] errbuf;
 
     Pcap_t* pcap = pcap::pcap_open_live(
         "enp4s0",
@@ -78,7 +80,7 @@ fn void main() {
 
     Bpf_program filter;
 
-    CInt ret = pcap::pcap_compile(
+    int ret = pcap::pcap_compile(
         pcap,
         &filter,
         "tcp port 443",
@@ -102,7 +104,7 @@ fn void main() {
         char* data;
         Pcap_pkthdr* header;
 
-        CInt out = pcap::pcap_next_ex(pcap, &header, &data);
+        int out = pcap::pcap_next_ex(pcap, &header, &data);
 
         if (out == 0) continue;
 
@@ -124,9 +126,10 @@ fn void main() {
 ### Open offline capture
 ```c3
 import libpcap;
+import std::io;
 
 fn void main() {
-    CChar[1024] errbuf;
+    char[1024] errbuf;
 
     Pcap_t* pcap = pcap::pcap_open_offline(
         "capture.pcap",
