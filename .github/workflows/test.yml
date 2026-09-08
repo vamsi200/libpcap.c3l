@@ -80,6 +80,11 @@ jobs:
         run: |
           set -e
 
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install bash
+            echo "$(brew --prefix bash)/bin" >> "$GITHUB_PATH"
+          fi
+
           git clone https://github.com/konimarti/c3l.git
           cd c3l
 
@@ -87,8 +92,14 @@ jobs:
           sudo make install
 
       - name: Check c3l
+        shell: bash
         run: |
-          c3l --version
+          echo "Bash:"
+          bash --version
+
+          echo "c3l:"
+          which c3l
+          head -n 1 "$(which c3l)"
 
       - name: Create test project
         shell: bash
