@@ -81,8 +81,10 @@ jobs:
           set -e
 
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install bash
+            brew install bash gnu-sed
+
             echo "$(brew --prefix bash)/bin" >> "$GITHUB_PATH"
+            echo "$(brew --prefix gnu-sed)/libexec/gnubin" >> "$GITHUB_PATH"
           fi
 
           git clone https://github.com/konimarti/c3l.git
@@ -91,11 +93,14 @@ jobs:
           make
           sudo make install
 
-      - name: Check c3l
+      - name: Check tools
         shell: bash
         run: |
           echo "Bash:"
           bash --version
+
+          echo "sed:"
+          sed --version
 
           echo "c3l:"
           which c3l
