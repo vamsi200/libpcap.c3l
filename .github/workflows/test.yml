@@ -3,6 +3,7 @@ name: Test libpcap.c3l
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -24,11 +25,35 @@ jobs:
       - name: Install C3
         shell: bash
         run: |
-          C3_NO_PATH_UPDATE=1 \
-            curl -fsSL https://raw.githubusercontent.com/c3lang/c3c/refs/heads/master/install/install.sh \
-            | bash
+          set -e
 
-          echo "$HOME/.c3" >> "$GITHUB_PATH"
+          C3_VERSION=0.8.2
+
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            curl -fL \
+              "https://github.com/c3lang/c3c/releases/download/v${C3_VERSION}/c3-macos.zip" \
+              -o c3.zip
+
+            unzip -q c3.zip -d "$HOME"
+
+            chmod +x "$HOME/c3/c3c"
+
+            echo "$HOME/c3" >> "$GITHUB_PATH"
+
+            xattr -d com.apple.quarantine "$HOME/c3/c3c" || true
+
+          else
+            curl -fL \
+              "https://github.com/c3lang/c3c/releases/download/v${C3_VERSION}/c3-linux-static.tar.gz" \
+              -o c3.tar.gz
+
+            mkdir -p "$HOME/c3"
+            tar -xzf c3.tar.gz -C "$HOME"
+
+            chmod +x "$HOME/c3/c3c"
+
+            echo "$HOME/c3" >> "$GITHUB_PATH"
+          fi
 
       - name: Check C3
         run: |
@@ -37,11 +62,14 @@ jobs:
       - name: Install libpcap
         shell: bash
         run: |
+          set -e
+
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             brew install libpcap
 
             echo "LIBRARY_PATH=$(brew --prefix libpcap)/lib" >> "$GITHUB_ENV"
             echo "CPATH=$(brew --prefix libpcap)/include" >> "$GITHUB_ENV"
+
           else
             sudo apt-get update
             sudo apt-get install -y libpcap-dev
@@ -50,27 +78,42 @@ jobs:
       - name: Install c3l
         shell: bash
         run: |
+          set -e
+
           git clone https://github.com/konimarti/c3l.git
           cd c3l
+
           make
           sudo make install
+
+      - name: Check c3l
+        run: |
+          c3l --version
 
       - name: Create test project
         shell: bash
         run: |
-          mkdir test_project
-          cd test_project
+          set -e
+
           c3c init test_project
 
       - name: Fetch libpcap.c3l
+        shell: bash
         working-directory: test_project
         run: |
+          set -e
+
+          pwd
+          ls -la
+
           c3l fetch https://github.com/vamsi200/libpcap.c3l
 
       - name: Create consumer
-        working-directory: test_project
         shell: bash
+        working-directory: test_project
         run: |
+          set -e
+
           cat > src/main.c3 <<'EOF'
           import libpcap;
           import std::io;
@@ -89,11 +132,17 @@ jobs:
           EOF
 
       - name: Build
+        shell: bash
         working-directory: test_project
         run: |
+          set -e
+
           c3c build
 
       - name: Run
+        shell: bash
         working-directory: test_project
         run: |
+          set -e
+
           ./build/test_project
