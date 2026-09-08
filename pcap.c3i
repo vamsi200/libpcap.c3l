@@ -117,9 +117,9 @@ struct Pcap_stat
     uint ps_recv;
     uint ps_drop;
     uint ps_ifdrop;
-    uint ps_capt @if(env::WIN32);
-    uint ps_sent @if(env::WIN32);
-    uint ps_netdrop @if(env::WIN32);
+    uint ps_capt @feat(WIN32);
+    uint ps_sent @feat(WIN32);
+    uint ps_netdrop @feat(WIN32);
 }
 
 struct Pcap_if
@@ -196,7 +196,7 @@ alias File = void;
 extern fn File* pcap_file(Pcap_t*);
 extern fn int pcap_fileno(Pcap_t*);
 extern fn Pcap_dumper_t* pcap_dump_open(Pcap_t*, ZString);
-extern fn Pcap_dumper_t* pcap_dump_fopen(Pcap_t* pcap, File* fp) @if(!env::WIN32);
+extern fn Pcap_dumper_t* pcap_dump_fopen(Pcap_t* pcap, File* fp) @feat(!WIN32);
 extern fn Pcap_dumper_t* pcap_dump_open_append(Pcap_t*, ZString);
 extern fn File* pcap_dump_file(Pcap_dumper_t*);
 extern fn CLong pcap_dump_ftell(Pcap_dumper_t*);
@@ -264,17 +264,17 @@ extern fn Pcap_t* pcap_hopen_offline_with_tstamp_precision(
     CLong osfd,
     uint precision,
     char* errbuf
-) @if(env::WIN32);
+) @feat(WIN32);
 
-extern fn Pcap_t* pcap_hopen_offline(CLong osfd, char* errbuf) @if(env::WIN32);
+extern fn Pcap_t* pcap_hopen_offline(CLong osfd, char* errbuf) @feat(WIN32);
 
-extern fn Pcap_t* pcap_fopen_offline(File* fp, char* errbuf) @if(!env::WIN32);
+extern fn Pcap_t* pcap_fopen_offline(File* fp, char* errbuf) @feat(!WIN32);
 
 extern fn Pcap_t* pcap_fopen_offline_with_tstamp_precision(
     File* fp,
     uint precision,
     char* errbuf
-) @if(!env::WIN32);
+) @feat(!WIN32);
 
 extern fn int pcap_inject(Pcap_t* pcap, void* buf, ulong size);
 
@@ -282,22 +282,22 @@ extern fn int pcap_sendpacket(Pcap_t* pcap, CUChar* buf, int size);
 
 extern fn int pcap_setdirection(Pcap_t* pcap, Pcap_direction_t direction);
 
-extern fn int pcap_set_protocol_linux(Pcap_t*, int) @if(env::LINUX);
-extern fn int pcap_wsockinit(void) @if(env::WIN32);
-extern fn Pcap_dumper_t* pcap_dump_hopen(Pcap_t* pcap, CLong fd) @if(env::WIN32);
+extern fn int pcap_set_protocol_linux(Pcap_t*, int) @feat(LINUX);
+extern fn int pcap_wsockinit(void) @feat(WIN32);
+extern fn Pcap_dumper_t* pcap_dump_hopen(Pcap_t* pcap, CLong fd) @feat(WIN32);
 
 alias AirpcapHandle = void;
 
-extern fn int pcap_setbuff(Pcap_t*, int) @if(env::WIN32);
-extern fn int pcap_setmode(Pcap_t*, int) @if(env::WIN32);
-extern fn int pcap_setmintocopy(Pcap_t*, int) @if(env::WIN32);
+extern fn int pcap_setbuff(Pcap_t*, int) @feat(WIN32);
+extern fn int pcap_setmode(Pcap_t*, int) @feat(WIN32);
+extern fn int pcap_setmintocopy(Pcap_t*, int) @feat(WIN32);
 
 alias Handle = void*;
 
-extern fn Handle pcap_getevent(Pcap_t* p) @if(env::WIN32);
+extern fn Handle pcap_getevent(Pcap_t* p) @feat(WIN32);
 
-extern fn int pcap_oid_get_request(Pcap_t*, uint, void*, usz*) @if(env::WIN32);
-extern fn int pcap_oid_set_request(Pcap_t*, uint, void*, usz*) @if(env::WIN32);
+extern fn int pcap_oid_get_request(Pcap_t*, uint, void*, usz*) @feat(WIN32);
+extern fn int pcap_oid_set_request(Pcap_t*, uint, void*, usz*) @feat(WIN32);
 
 struct Pcap_send_queue
 {
@@ -306,25 +306,29 @@ struct Pcap_send_queue
     char* buffer;
 }
 
-extern fn Pcap_send_queue* pcap_sendqueue_alloc(uint) @if(env::WIN32);
-extern fn void pcap_sendqueue_destroy(Pcap_send_queue*) @if(env::WIN32);
-extern fn int pcap_sendqueue_queue(Pcap_send_queue*, Pcap_pkthdr*, CUChar*) @if(env::WIN32);
-extern fn uint pcap_sendqueue_transmit(Pcap_t*, Pcap_send_queue*, int) @if(env::WIN32);
-extern fn Pcap_stat* pcap_stats_ex(Pcap_t*, int*) @if(env::WIN32);
+extern fn Pcap_send_queue* pcap_sendqueue_alloc(uint) @feat(WIN32);
+extern fn void pcap_sendqueue_destroy(Pcap_send_queue*) @feat(WIN32);
+extern fn int pcap_sendqueue_queue(Pcap_send_queue*, Pcap_pkthdr*, CUChar*) @feat(WIN32);
+extern fn uint pcap_sendqueue_transmit(Pcap_t*, Pcap_send_queue*, int) @feat(WIN32);
+extern fn Pcap_stat* pcap_stats_ex(Pcap_t*, int*) @feat(WIN32);
 
-extern fn int pcap_setuserbuffer(Pcap_t*, int) @if(env::WIN32);
-extern fn int pcap_live_dump(Pcap_t*, char*, int, int) @if(env::WIN32);
-extern fn int pcap_live_dump_ended(Pcap_t*, int) @if(env::WIN32);
-extern fn int pcap_start_oem(char*, int) @if(env::WIN32);
-extern fn PAirpcapHandle pcap_get_airpcap_handle(Pcap_t*) @if(env::WIN32);
+extern fn int pcap_setuserbuffer(Pcap_t*, int) @feat(WIN32);
+extern fn int pcap_live_dump(Pcap_t*, char*, int, int) @feat(WIN32);
+extern fn int pcap_live_dump_ended(Pcap_t*, int) @feat(WIN32);
+extern fn int pcap_start_oem(char*, int) @feat(WIN32);
+
+
+alias PAirpcapHandle = AirpcapHandle*;
+
+extern fn PAirpcapHandle pcap_get_airpcap_handle(Pcap_t*) @feat(WIN32);
 
 const MODE_CAPT = 0;
 const MODE_STAT = 1;
 const MODE_MON  = 2;
 
-extern fn int pcap_get_selectable_fd(Pcap_t*) @if(!env::WIN32);
+extern fn int pcap_get_selectable_fd(Pcap_t*) @feat(!WIN32);
 
-extern fn Timeval* pcap_get_required_select_timeout(Pcap_t*) @if(!env::WIN32);
+extern fn Timeval* pcap_get_required_select_timeout(Pcap_t*) @feat(!WIN32);
 
 extern fn Pcap_t* pcap_open(
     ZString source,
