@@ -1,0 +1,99 @@
+name: Test libpcap.c3l
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-13
+          - macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install C3
+        shell: bash
+        run: |
+          C3_NO_PATH_UPDATE=1 \
+            curl -fsSL https://raw.githubusercontent.com/c3lang/c3c/refs/heads/master/install/install.sh \
+            | bash
+
+          echo "$HOME/.c3" >> "$GITHUB_PATH"
+
+      - name: Check C3
+        run: |
+          c3c --version
+
+      - name: Install libpcap
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install libpcap
+
+            echo "LIBRARY_PATH=$(brew --prefix libpcap)/lib" >> "$GITHUB_ENV"
+            echo "CPATH=$(brew --prefix libpcap)/include" >> "$GITHUB_ENV"
+          else
+            sudo apt-get update
+            sudo apt-get install -y libpcap-dev
+          fi
+
+      - name: Install c3l
+        shell: bash
+        run: |
+          git clone https://github.com/konimarti/c3l.git
+          cd c3l
+          make
+          sudo make install
+
+      - name: Create test project
+        shell: bash
+        run: |
+          mkdir test_project
+          cd test_project
+          c3c init test_project
+
+      - name: Fetch libpcap.c3l
+        working-directory: test_project
+        run: |
+          c3l fetch https://github.com/vamsi200/libpcap.c3l
+
+      - name: Create consumer
+        working-directory: test_project
+        shell: bash
+        run: |
+          cat > src/main.c3 <<'EOF'
+          import libpcap;
+          import std::io;
+
+          fn void main()
+          {
+              Pcap_if_t* alldevs;
+              char[256] errbuf;
+
+              int ret = pcap::pcap_findalldevs(&alldevs, &errbuf);
+
+              if (ret != 0) return;
+
+              pcap::pcap_freealldevs(alldevs);
+          }
+          EOF
+
+      - name: Build
+        working-directory: test_project
+        run: |
+          c3c build
+
+      - name: Run
+        working-directory: test_project
+        run: |
+          ./build/test_project
