@@ -261,12 +261,12 @@ extern fn Pcap_t* pcap_open_offline_with_tstamp_precision(
 );
 
 extern fn Pcap_t* pcap_hopen_offline_with_tstamp_precision(
-    CLong osfd,
+    iptr osfd,
     uint precision,
     char* errbuf
 ) @feat(WIN32);
 
-extern fn Pcap_t* pcap_hopen_offline(CLong osfd, char* errbuf) @feat(WIN32);
+extern fn Pcap_t* pcap_hopen_offline(iptr osfd, char* errbuf) @feat(WIN32);
 
 extern fn Pcap_t* pcap_fopen_offline(File* fp, char* errbuf) @feat(!WIN32);
 
@@ -283,8 +283,8 @@ extern fn int pcap_sendpacket(Pcap_t* pcap, CUChar* buf, int size);
 extern fn int pcap_setdirection(Pcap_t* pcap, Pcap_direction_t direction);
 
 extern fn int pcap_set_protocol_linux(Pcap_t*, int) @feat(LINUX);
-extern fn int pcap_wsockinit(void) @feat(WIN32);
-extern fn Pcap_dumper_t* pcap_dump_hopen(Pcap_t* pcap, CLong fd) @feat(WIN32);
+extern fn int pcap_wsockinit() @feat(WIN32);
+extern fn Pcap_dumper_t* pcap_dump_hopen(Pcap_t* pcap, iptr fd) @feat(WIN32);
 
 alias AirpcapHandle = void;
 

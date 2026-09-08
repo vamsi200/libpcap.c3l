@@ -27,7 +27,7 @@ jobs:
         run: |
           set -e
 
-          C3_VERSION=0.8.2
+          C3_VERSION=0.8.3
 
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             curl -fL \
