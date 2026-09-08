@@ -1,7 +1,9 @@
 {
   "provides": "libpcap",
   "sources": [
-    "libpcap.c3i"
+    "libpcap.c3i",
+    "pcap.c3i",
+    "bpf.c3i"
   ],
   "targets": {
     "linux-x86": {
