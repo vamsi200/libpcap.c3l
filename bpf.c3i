@@ -56,7 +56,7 @@ struct Bpf_insn
     uint k;
 }
 
-extern fn uint filter(Bpf_insn*, CUChar*, uint, uint);
-extern fn int validate(Bpf_insn* f, int len);
-extern fn ZString image(Bpf_insn*, int);
-extern fn void dump(Bpf_program*, int);
+extern fn uint filter(Bpf_insn*, CUChar*, uint, uint) @cname("bpf_filter");
+extern fn int validate(Bpf_insn* f, int len) @cname("bpf_validate");
+extern fn ZString image(Bpf_insn*, int) @cname("bpf_image");
+extern fn void dump(Bpf_program*, int) @cname("bpf_dump");

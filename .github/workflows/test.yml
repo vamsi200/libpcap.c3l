@@ -138,11 +138,11 @@ jobs:
               Pcap_if_t* alldevs;
               char[256] errbuf;
 
-              int ret = pcap::pcap_findalldevs(&alldevs, &errbuf);
+              int ret = pcap::findalldevs(&alldevs, &errbuf);
 
               if (ret != 0) return;
 
-              pcap::pcap_freealldevs(alldevs);
+              pcap::freealldevs(alldevs);
           }
           EOF
 
